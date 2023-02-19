@@ -23,6 +23,29 @@ router.get("/", (req, res, next) => {
   });
 });
 
+// HELPS TO GET ALL FOOD DATA FROM THE DATABASE
+// PARAMS
+// HTTP METHOD GET
+// ROUTE http://localhost:5000/food/
+// req {   }
+
+router.get("/:category", (req, res, next) => {
+  const { category = "" } = req.params;
+  FoodModel.find({ category: category }).then((response) => {
+    if (response.length > 0) {
+      return res.status(200).json({
+        message: "Success fetching food!!!",
+        data: response,
+      });
+    } else {
+      return res.status(200).json({
+        message: "Sorry we ran out of groceries!!!",
+        data: response,
+      });
+    }
+  });
+});
+
 // HELPS TO POST A FOOD DATA TO THE DATABASE
 // PARAMS NEW FOODMODEL
 // HTTP METHOD POST

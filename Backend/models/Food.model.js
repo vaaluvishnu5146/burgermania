@@ -58,6 +58,10 @@ const FoodSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Food", FoodSchema);
