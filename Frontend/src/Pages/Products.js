@@ -3,27 +3,41 @@ import { Col, Container, Row } from "reactstrap";
 import BasicCrumbs from "../Components/Breadcrumbs/BasicCrumbs";
 import ProductCard from "../Components/Cards/ProductCard";
 import { useSearchParams, useParams } from "react-router-dom";
+import { saveProducts } from "../redux/Reducers/Products.reducer";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Products() {
+  // HELPS TO DISPATCH ACTION CREATOR FROM REACT COMPONENT
+  const { isLoading = false, products = [] } = useSelector(
+    (store) => store.product
+  );
+  const dispatch = useDispatch();
   const { category = "" } = useParams();
-  const [food, setFood] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    const response = await fetch(
+      `${process.env.REACT_APP_BURGER_MANIA_SERVER_BASE_URL}/food/${category}`
+    );
+    response
+      .json()
+      .then((result) => {
+        const { message = "", data = [] } = result;
+        if (data.length > 0) {
+          dispatch(saveProducts(data));
+          setLoading(false);
+        }
+      })
+      .catch((err) => alert(err));
+  };
 
   useEffect(() => {
-    if (food.length < 1) {
-      fetch(
-        `${process.env.REACT_APP_BURGER_MANIA_SERVER_BASE_URL}/food/${category}`
-      )
-        .then((response) => response.json())
-        .then((result) => {
-          const { message = "", data = [] } = result;
-          if (data.length > 0) {
-            setFood(data);
-          }
-        })
-        .catch((err) => alert(err));
+    if (loading && products.length < 1) {
+      fetchData();
     }
-
-    return () => {};
+    return () => {
+      setLoading(false);
+    };
   }, []);
 
   return (
@@ -34,8 +48,8 @@ export default function Products() {
           <Col lg="8" md="6" sm="12" xs="12">
             <h3 className="fw-bold text-uppercase">Burgers</h3>
             <Row>
-              {food.length > 0 ? (
-                food.map((data, i) => (
+              {products.length > 0 ? (
+                products.map((data, i) => (
                   <Col lg="4">
                     <ProductCard data={data} key={i} />
                   </Col>

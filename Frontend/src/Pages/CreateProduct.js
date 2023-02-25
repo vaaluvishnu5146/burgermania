@@ -19,7 +19,9 @@ import {
 } from "../mocks/data";
 
 export default function CreateProduct() {
-  const [food, setFood] = useState({});
+  const [food, setFood] = useState({
+    tags: [],
+  });
 
   const handleInput = (e) => {
     if (e) {
@@ -27,7 +29,16 @@ export default function CreateProduct() {
       let foodCopy = {
         ...food,
       };
-      foodCopy[id] = value;
+      if (e.target.type === "select-multiple") {
+        console.log(e.target.value);
+        if (foodCopy[id].indexOf(value) > -1) {
+          foodCopy[id] = foodCopy[id].filter((d) => d !== value);
+        } else {
+          foodCopy[id].push(value);
+        }
+      } else {
+        foodCopy[id] = value;
+      }
       setFood(foodCopy);
     }
   };
@@ -44,10 +55,15 @@ export default function CreateProduct() {
       .catch((err) => alert(err));
   };
 
+  const getStyle = (data = [], item = "") => {
+    return data.indexOf(item) > -1 ? "aqua" : "#FFFFFF";
+  };
+
   return (
     <Container>
       <div className="mt-4">
         <h3 className="mb-5">Create Food</h3>
+        <h5>Total items available</h5>
         <FormGroup>
           <Label className="fw-bold" for="name">
             Product Name
@@ -82,13 +98,21 @@ export default function CreateProduct() {
             name="imageUrl"
             placeholder="Copy / Paste Image Url"
             type="url"
+            onChange={handleInput}
+            value={food["imageUrl"]}
           />
         </FormGroup>
         <FormGroup>
           <Label className="fw-bold" for="category">
             Product Category
           </Label>
-          <Input id="category" name="select" type="select">
+          <Input
+            id="category"
+            name="select"
+            type="select"
+            onChange={handleInput}
+            value={food["category"]}
+          >
             {categories.map((d, i) => (
               <option key={`category-option-${i}`}>{d.category}</option>
             ))}
@@ -98,7 +122,13 @@ export default function CreateProduct() {
           <Label className="fw-bold" for="cuisine">
             Product Cuisine
           </Label>
-          <Input id="cuisine" name="select" type="select">
+          <Input
+            id="cuisine"
+            name="select"
+            type="select"
+            onChange={handleInput}
+            value={food["cuisine"]}
+          >
             {Cuisine.map((d, i) => (
               <option key={`cuisine-option-${i}`}>{d.label}</option>
             ))}
@@ -108,7 +138,13 @@ export default function CreateProduct() {
           <Label className="fw-bold" for="foodtype">
             Food Type
           </Label>
-          <Input id="foodtype" name="select" type="select">
+          <Input
+            id="foodtype"
+            name="select"
+            type="select"
+            onChange={handleInput}
+            value={food["foodtype"]}
+          >
             {FoodType.map((d, i) => (
               <option key={`foodtype-option-${i}`}>{d.label}</option>
             ))}
@@ -123,15 +159,31 @@ export default function CreateProduct() {
             name="price"
             placeholder="Enter food Price"
             type="number"
+            onChange={handleInput}
+            value={food["price"]}
           />
         </FormGroup>
         <FormGroup>
           <Label className="fw-bold" for="tags">
             Select Product Tags
           </Label>
-          <Input id="tags" multiple name="tags" type="select">
+          <Input
+            id="tags"
+            multiple
+            name="tags"
+            type="select"
+            onChange={handleInput}
+            value={food["tags"]}
+          >
             {ProductTags.map((d, i) => (
-              <option key={`tags-option-${i}`}>{d.label}</option>
+              <option
+                key={`tags-option-${i}`}
+                style={{
+                  background: getStyle(food["tags"], d.label),
+                }}
+              >
+                {d.label}
+              </option>
             ))}
           </Input>
         </FormGroup>
@@ -146,6 +198,8 @@ export default function CreateProduct() {
                 name="discount"
                 placeholder="Enter Discount"
                 type="number"
+                onChange={handleInput}
+                value={food["discount"]}
               />
             </FormGroup>
           </Col>
@@ -154,7 +208,13 @@ export default function CreateProduct() {
               <Label className="fw-bold" for="discountType">
                 Food Type
               </Label>
-              <Input id="discountType" name="select" type="select">
+              <Input
+                id="discountType"
+                name="select"
+                type="select"
+                onChange={handleInput}
+                value={food["discount"]}
+              >
                 {DiscountType.map((d, i) => (
                   <option key={`discountType-option-${i}`}>{d.label}</option>
                 ))}
