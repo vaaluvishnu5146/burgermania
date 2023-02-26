@@ -8,8 +8,26 @@ import {
   Col,
   Row,
 } from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { addItemToCart } from "../../redux/Reducers/Cart.reducer";
 
 export default function ProductCard({ data = {} }) {
+  const dispatch = useDispatch();
+  const { items = [] } = useSelector((store) => store.cart);
+
+  const handleItem = (e) => {
+    if (e) {
+      const dataCopy = {
+        ...data,
+        quantity: 1,
+      };
+      dispatch(addItemToCart(dataCopy));
+    }
+  };
+
+  const getDisabled =
+    items.filter((d) => d._id == data._id).length > 0 ? true : false;
+
   return (
     <Card
       style={{
@@ -56,8 +74,10 @@ export default function ProductCard({ data = {} }) {
               }}
               color="primary"
               outline
+              disabled={getDisabled}
+              onClick={handleItem}
             >
-              ADD
+              {getDisabled ? "ADDED" : "ADD"}
             </Button>
           </Col>
         </Row>

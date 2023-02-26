@@ -5,12 +5,15 @@ import ProductCard from "../Components/Cards/ProductCard";
 import { useSearchParams, useParams } from "react-router-dom";
 import { saveProducts } from "../redux/Reducers/Products.reducer";
 import { useDispatch, useSelector } from "react-redux";
+import CartCard from "../Components/Cards/CartCard";
+import EmptyKitchen from "../assets/emptycart.webp";
 
 export default function Products() {
   // HELPS TO DISPATCH ACTION CREATOR FROM REACT COMPONENT
   const { isLoading = false, products = [] } = useSelector(
     (store) => store.product
   );
+  const { items = [] } = useSelector((store) => store.cart);
   const dispatch = useDispatch();
   const { category = "" } = useParams();
   const [loading, setLoading] = useState(true);
@@ -59,7 +62,18 @@ export default function Products() {
               )}
             </Row>
           </Col>
-          <Col></Col>
+          <Col lg="4" id="cart-column">
+            <h3 className="fw-bold text-uppercase">Cart Items</h3>
+            <Row>
+              {items.length < 1 ? (
+                <Col>
+                  <img src={EmptyKitchen} width="100%" height={"100%"} />
+                </Col>
+              ) : (
+                items.map((d, i) => <CartCard data={d} key={i} />)
+              )}
+            </Row>
+          </Col>
         </Row>
       </Container>
     </section>
